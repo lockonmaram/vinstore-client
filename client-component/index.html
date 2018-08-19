@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>VinStore</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="./img/vinyl.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+  <link href="./css/style.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div class="container">
+    <div class="jumbotron">
+      <div class="container text-center">
+        <div class="jumbo-text">
+          <h1>VinStore</h1>
+          <p>Complete your vinyl collection now!</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" v-on:click="getData()" href="#">VinStore</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" v-on:click="getData()" href="#">Home</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="artistDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Artists
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" v-for="artist in artists" v-on:click="filterArtist(artist)" href="#">{{ artist }}</a>
+            </div>
+          </li>
+          <li class="nav-item" v-if="token !== null">
+            <a class="nav-link" v-on:click="logout()" href="#">Logout</a>
+          </li>
+          <li class="nav-item" v-if="token === null">
+            <a class="nav-link" href="#login">Login</a>
+          </li>
+        </ul>
+        <div class="dropdown">
+          <button type="button" class="btn btn-info" data-toggle="dropdown">
+            <i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span classwatch="badge badge-pill badge-danger">{{ totalAmount() }}</span>
+          </button>
+          <div class="dropdown-menu">
+            <div class="row total-header-section">
+              <div class="col-lg-6 col-sm-6 col-6">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i> <span class="badge badge-pill badge-danger">{{ totalAmount() }}</span>
+              </div>
+              <div class="col-lg-6 col-sm-6 col-6 total-section text-right">
+                <p>Total: <span class="text-info">${{ displayTwoFloat(totalPrice()) }}</span></p>
+              </div>
+            </div>
+            <div class="row cart-detail" v-for="album in cartDisplay">
+              <div class="col-lg-4 col-sm-4 col-4 cart-detail-img">
+                <img v-bind:src="album.cover">
+              </div>
+              <div class="col-lg-8 col-sm-8 col-8 cart-detail-product">
+                <p>{{ album.title }}</p>
+                <span class="price text-info"> ${{ displayTwoFloat(album.price) }}</span> <span class="count"> Quantity:{{ album.quantity }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-sm-12 col-12 text-center checkout">
+                <button class="btn btn-primary btn-block checkout-button" v-on:click="onCheckout(displayTwoFloat(totalPrice()))">Checkout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <section id="items">
+    <h2 class="text-center text-uppercase text-secondary mb-0">Vinyls</h2>
+    <hr class="star-dark mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="product-layout col-md-3 col-sm-6 col-xs-6" v-for="album in albums">
+          <div class="product-thumb transition">
+            <div class="image"><a href="#"><img v-bind:src="album.cover" v-bind:alt="album.title" v-bind:title="album.title" style="width:75%"/></a></div>
+            <div class="caption">
+              <h4><a href="#">{{ album.title }}</a></h4>
+              <p class="artist">{{ album.artist }}</p>
+              <p class="price">${{ displayTwoFloat(album.price) }}</p>
+            </div>
+            <div class="button-group" v-if="token !== null">
+              <button type="button" class="btn btn-default" v-on:click="addToCart(album)"><i class="fa fa-shopping-cart"></i> Add To Cart</button>
+              <button type="button" class="btn btn-danger" v-on:click="deleteTaskChild(todo._id)" v-if="isAdmin === 'true'">X</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="add-item" v-if="isAdmin == 'true'">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-secondary mb-0">Add Item</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <form name="addItemForm" id="addItemForm" novalidate="novalidate">
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Title</label>
+                <input class="form-control" id="title-input" type="title" placeholder="Album title" required="required" data-validation-required-message="Input album title" v-model="title">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Cover</label>
+                <br>
+                <input type="file" id="file" ref="file" v-on:change="handleFileUpload($event.target.files[0])"/>
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Price</label>
+                <input class="form-control" id="price-input" type="price" placeholder="Album price" required="required" data-validation-required-message="Input album price" v-model="price">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Artist</label>
+                <input class="form-control" id="artist-input" type="artist" placeholder="Album artist" required="required" data-validation-required-message="Input album artist" v-model="artist">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <br>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-xl" id="addItemButton" v-on:click="addItem">Add Item</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="login" v-if="token === null">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-secondary mb-0">Login</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div style="margin:0 auto;" class="fb-login-button" data-width="100" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false" scope="public_profile,email" onlogin="checkLoginState();"></div>
+          <form name="loginForm" id="login-form" novalidate="novalidate">
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Email Address</label>
+                <input class="form-control" id="email-login" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address." v-model="emailLogin">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Password</label>
+                <input class="form-control" id="password-login" type="password" placeholder="Password" required="required" data-validation-required-message="Please enter your password." v-model="passwordLogin">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <br>
+            <div id="success"></div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-xl" id="loginButton" v-on:click="login">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="register" v-if="token === null">
+    <div class="container">
+      <h2 class="text-center text-uppercase text-secondary mb-0">Register</h2>
+      <hr class="star-dark mb-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <form name="registerForm" id="register-form" novalidate="novalidate">
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>First Name</label>
+                <input class="form-control" id="fname" type="text" placeholder="First Name" required="required" data-validation-required-message="Please enter your first name." v-model="first_name">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Last Name</label>
+                <input class="form-control" id="lname" type="tel" placeholder="Last Name" required="required" data-validation-required-message="Please enter your last name." v-model="last_name">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Email Address</label>
+                <input class="form-control" id="email" type="email" placeholder="Email Address" required="required" data-validation-required-message="Please enter your email address." v-model="email">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                <label>Password</label>
+                <input class="form-control" id="password" type="password" placeholder="Password" required="required" data-validation-required-message="Please enter your password." v-model="password">
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+            <br>
+            <div id="success"></div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-xl" id="registerButton" v-on:click="signUp">Sign Up</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <footer>
+      <div class="jumbotron-footer">
+        <div class="container text-center">
+          <div class="jumbo-text-footer">
+            <p>Vinyl VinStore © 2018</p>
+            <p>(copyright pending)</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+<script src="./lib/vue.js"></script>
+</body>
+</html>

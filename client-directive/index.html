@@ -6,13 +6,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="./img/vinyl.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-  <link href="./css/style.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style media="screen">
+  .navbar {
+    margin-bottom: 50px;
+    border-radius: 0;
+    background: linear-gradient(to left, #f8a341 0%, #3bdecd 100%);
+  }
+   .jumbotron {
+      background-image: url(../img/vinyljumbo.jpg);
+      no-repeat;
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+    }
+    .jumbotron-footer {
+      background-image: url(../img/vinyljumbo.jpg);
+      no-repeat;
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+      background-position: bottom;
+    }
+    .jumbotron .container {
+    position: relative;
+    top:100px;
+    }
+  .jumbo-text {
+    background-color: #f8a341;
+    opacity:0.8;
+    border-radius: 25px;
+  }
+  .jumbo-text-footer {
+    background-color: #F8F8F8;
+    opacity:0.8;
+    border-radius: 50px;
+  }
+  .main-section{
+    background-color: #F8F8F8;
+    margin-top:50px;
+  }localhost:3000/users
+  .dropdown{
+    float:right;
+    padding-right: 30px;
+  }
+  .btn{
+    border:0px;
+    margin:10px 0px;
+    box-shadow:none !important;
+  }
+  .dropdown .dropdown-menu{
+    padding:20px;
+    top:30px !important;
+    width:350px !important;
+    left:-250px !important;
+    box-shadow:0px 5px 30px black;
+  }
+  .total-header-section{
+    border-bottom:1px solid #d2d2d2;
+  }
+  .total-section p{
+    margin-bottom:20px;
+  }
+  .cart-detail{
+    padding:15px 0px;
+  }
+  .cart-detail-img img{
+    width:100%;
+    height:100%;
+    padding-left:15px;
+  }
+  .cart-detail-product p{
+    margin:0px;
+    color:#000;
+    font-weight:500;
+  }
+  .cart-detail .price{
+    font-size:12px;
+    margin-right:10px;
+    font-weight:500;
+  }
+  .cart-detail .count{
+    color:#C2C2DC;
+  }
+  .checkout{
+    border-top:1px solid #d2d2d2;
+    padding-top: 15px;
+  }
+  .checkout .btn-primary{
+    border-radius:50px;
+    height:50px;
+    background: linear-gradient(to right, #f8a341 0%, #3bdecd 100%);
+  }
+  .dropdown-menu:before{
+    content: " ";
+    position:absolute;
+    top:-20px;
+    right:50px;
+    border:10px solid transparent;
+    border-bottom-color:#fff;
+  }
+  </style>
 </head>
 <body>
 <div id="app">
@@ -36,9 +135,6 @@
           <li class="nav-item">
             <a class="nav-link" v-on:click="getData()" href="#">Home</a>
           </li>
-          <li class="nav-item" v-if="token !== null">
-            <a class="nav-link" v-on:click="logout()" href="#">Logout</a>
-          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="artistDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Artists
@@ -46,6 +142,12 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" v-for="artist in artists" v-on:click="filterArtist(artist)" href="#">{{ artist }}</a>
             </div>
+          </li>
+          <li class="nav-item" v-if="token !== null">
+            <a class="nav-link" v-on:click="logout()" href="#">Logout</a>
+          </li>
+          <li class="nav-item" v-if="token === null">
+            <a class="nav-link" href="#login">Login</a>
           </li>
         </ul>
         <div class="dropdown">
@@ -96,6 +198,7 @@
             </div>
             <div class="button-group" v-if="token !== null">
               <button type="button" class="btn btn-default" v-on:click="addToCart(album)"><i class="fa fa-shopping-cart"></i> Add To Cart</button>
+              <button type="button" class="btn btn-danger" v-on:click="deleteTaskChild(todo._id)" v-if="isAdmin === 'true'">X</button>
             </div>
           </div>
         </div>
@@ -242,238 +345,238 @@
   </div>
 </div>
 <script>
-  var app = new Vue({
-    el: '#app',
-    data: {
-      albums: null,
-      cart: [],
-      artists: null,
+var app = new Vue({
+  el: '#app',
+  data: {
+    albums: null,
+    cart: [],
+    artists: null,
 
-      userId: localStorage.getItem('id'),
-      first_name: localStorage.getItem('first_name'),
-      last_name: localStorage.getItem('last_name'),
-      email: null,
-      password: null,
-      token: localStorage.getItem('authorization'),
-      emailLogin: null,
-      passwordLogin: null,
-      isAdmin: localStorage.getItem('isAdmin'),
+    userId: localStorage.getItem('id'),
+    first_name: localStorage.getItem('first_name'),
+    last_name: localStorage.getItem('last_name'),
+    email: null,
+    password: null,
+    token: localStorage.getItem('authorization'),
+    emailLogin: null,
+    passwordLogin: null,
+    isAdmin: localStorage.getItem('isAdmin'),
 
-      image: null,
-      title: null,
-      price: null,
-      artist: null,
+    image: null,
+    title: null,
+    price: null,
+    artist: null,
+  },
+  methods: {
+    displayTwoFloat: function(price){
+      return price.toFixed(2)
     },
-    methods: {
-      displayTwoFloat: function(price){
-        return price.toFixed(2)
-      },
-      handleFileUpload: function(img){
-        this.image = img
-        console.log('ini image',this.image);
-      },
-      addItem: function(){
-        event.preventDefault()
-        let formData = new FormData()
-        formData.append('image', this.image)
-        console.log(formData);
+    handleFileUpload: function(img){
+      this.image = img
+      console.log('ini image',this.image);
+    },
+    addItem: function(){
+      event.preventDefault()
+      let formData = new FormData()
+      formData.append('image', this.image)
+      console.log(formData);
 
-        axios({
-          method: 'post',
-          url: 'https://vinstoreserver.lockonmaram.com/upload',
-          data: formData,
+      axios({
+        method: 'post',
+        url: 'https://vinstoreserver.lockonmaram.com/upload',
+        data: formData,
+      })
+      .then(result=>{
+        console.log(result.data.link);
+        axios.post('https://vinstoreserver.lockonmaram.com/albums/add',{
+          title: this.title,
+          cover: result.data.link,
+          price: this.price,
+          artist: this.artist
         })
-        .then(result=>{
-          console.log(result.data.link);
-          axios.post('https://vinstoreserver.lockonmaram.com/albums/add',{
-            title: this.title,
-            cover: result.data.link,
-            price: this.price,
-            artist: this.artist
+        .then(album=>{
+          swal("Yeay", "New item has been submited!", "success")
+          .then(ok=>{
+            window.location.assign('http://localhost:8080')
           })
-          .then(album=>{
-            swal("Yeay", "New item has been submited!", "success")
-            .then(ok=>{
-              window.location.assign('http://localhost:8080')
-            })
+        })
+        .catch(err=>{
+          swal("Failed!", "Item failed to input", "error");
+        })
+      })
+      .catch(function(){
+        swal("Failed!", "Your file has not been uploaded", "error");
+      });
+    },
+    addToCart: function(album){
+      album.quantity = 1
+      this.cart.push(album)
+      swal("Nice choice!", "Item added to cart", "success");
+    },
+    onCheckout: function(totalPrice){
+      swal({
+        title: "Checkout now?",
+        text: `Total price: $${totalPrice}`,
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+          axios.put('https://vinstoreserver.lockonmaram.com/users/addTransaction',{
+            userId: this.userId,
+            items: this.cart,
+            token: this.token,
+            totalPrice: totalPrice
+          })
+          .then(done=>{
+            swal("Thank you for shopping with us! Have a nice day!", {
+              icon: "success",
+            });
+            this.cart = []
           })
           .catch(err=>{
-            swal("Failed!", "Item failed to input", "error");
+            swal("Something went wrong!", "please try again")
+            this.cart = []
           })
-        })
-        .catch(function(){
-          swal("Failed!", "Your file has not been uploaded", "error");
-        });
-      },
-      addToCart: function(album){
-        album.quantity = 1
-        this.cart.push(album)
-        swal("Nice choice!", "Item added to cart", "success");
-      },
-      onCheckout: function(totalPrice){
-        swal({
-          title: "Checkout now?",
-          text: `Total price: $${totalPrice}`,
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-        })
-        .then((willDelete) => {
-          if (willDelete) {
-            axios.put('https://vinstoreserver.lockonmaram.com/users/addTransaction',{
-              userId: this.userId,
-              items: this.cart,
-              token: this.token,
-              totalPrice: totalPrice
-            })
-            .then(done=>{
-              swal("Thank you for shopping with us! Have a nice day!", {
-                icon: "success",
-              });
-              this.cart = []
-            })
-            .catch(err=>{
-              swal("Something went wrong!", "please try again")
-              this.cart = []
-            })
-          }
-        });
-      },
-      totalPrice: function(){
-        let totalPrice = 0
-        this.cart.forEach(album =>{
-          totalPrice += (album.price * album.quantity)
-        })
-        return totalPrice
-      },
-      totalAmount: function(){
-        let totalAmount = 0
-        this.cart.forEach(album =>{
-          totalAmount += album.quantity
-        })
-        return totalAmount
-      },
-      getData: function(){
-        console.log('hoho');
-        axios.get('https://vinstoreserver.lockonmaram.com/albums')
-        .then(albums=>{
-          console.log(albums.data);
-          this.albums = albums.data
-          let artistArr = []
-          for (let i = 0; i < albums.data.length; i++) {
-            let listed = false
-            for (let j = 0; j < artistArr.length; j++) {
-              if (artistArr[j] === albums.data[i].artist) {
-                listed = true
-              }
-            }
-            if (listed === false) {
-              artistArr.push(this.albums[i].artist)
+        }
+      });
+    },
+    totalPrice: function(){
+      let totalPrice = 0
+      this.cart.forEach(album =>{
+        totalPrice += (album.price * album.quantity)
+      })
+      return totalPrice
+    },
+    totalAmount: function(){
+      let totalAmount = 0
+      this.cart.forEach(album =>{
+        totalAmount += album.quantity
+      })
+      return totalAmount
+    },
+    getData: function(){
+      console.log('hoho');
+      axios.get('https://vinstoreserver.lockonmaram.com/albums')
+      .then(albums=>{
+        console.log(albums.data);
+        this.albums = albums.data
+        let artistArr = []
+        for (let i = 0; i < albums.data.length; i++) {
+          let listed = false
+          for (let j = 0; j < artistArr.length; j++) {
+            if (artistArr[j] === albums.data[i].artist) {
+              listed = true
             }
           }
-          this.artists = artistArr
-        })
-      },
-      login: function(){
-        event.preventDefault()
-
-        axios.post('https://vinstoreserver.lockonmaram.com/users/login', {
-          email: this.emailLogin,
-          password: this.passwordLogin
-        })
-        .then(res=>{
-          if (res.data === 'wrong password') {
-            swal("Wrong password!");
-          }else if (res.data === 'email is not found') {
-            swal("Email not found!")
-          }else {
-            console.log('resasdfadsf',res);
-            this.token = res.data.token
-            this.userId = res.data.userId
-            this.first_name = res.data.first_name
-            this.last_name = res.data.last_name
-            // console.log(this.userId);
-            // console.log(this.token);
-            localStorage.setItem('authorization', res.data.token);
-            localStorage.setItem('id', res.data.userId);
-            localStorage.setItem('first_name', res.data.first_name);
-            localStorage.setItem('last_name', res.data.last_name);
-            localStorage.setItem('isAdmin', res.data.isAdmin);
-            swal("Yeay", "You are logged in!", "success")
-            .then(ok=>{
-              window.location.assign('http://localhost:8080')
-            })
+          if (listed === false) {
+            artistArr.push(this.albums[i].artist)
           }
-        })
-      },
-      logout: function(){
-        // event.preventDefault()
-        this.token = null
-        this.userId = null
-        this.first_name = null
-        this.last_name = null
-        this.isAdmin = null
-        localStorage.clear();
-        swal("You have logged out", "See you later!")
-        .then(ok=>{
-          window.location.assign('http://localhost:8080')
-        })
-      },
-      signUp: function(){
-        event.preventDefault()
+        }
+        this.artists = artistArr
+      })
+    },
+    login: function(){
+      event.preventDefault()
 
-        axios.post('https://vinstoreserver.lockonmaram.com/users/signup', {
-          first_name: this.first_name,
-          last_name: this.last_name,
-          email: this.email,
-          password: this.password
-        })
-        .then(res=>{
-          // console.log(res.data);
-          this.token = res.data
+      axios.post('https://vinstoreserver.lockonmaram.com/users/login', {
+        email: this.emailLogin,
+        password: this.passwordLogin
+      })
+      .then(res=>{
+        if (res.data === 'wrong password') {
+          swal("Wrong password!");
+        }else if (res.data === 'email is not found') {
+          swal("Email not found!")
+        }else {
+          console.log('resasdfadsf',res);
+          this.token = res.data.token
+          this.userId = res.data.userId
+          this.first_name = res.data.first_name
+          this.last_name = res.data.last_name
+          // console.log(this.userId);
           // console.log(this.token);
           localStorage.setItem('authorization', res.data.token);
           localStorage.setItem('id', res.data.userId);
           localStorage.setItem('first_name', res.data.first_name);
           localStorage.setItem('last_name', res.data.last_name);
           localStorage.setItem('isAdmin', res.data.isAdmin);
-          swal("Yeay", "Thank you for signing up!", "success")
+          swal("Yeay", "You are logged in!", "success")
           .then(ok=>{
             window.location.assign('http://localhost:8080')
           })
-        })
-      },
-      filterArtist: function(artist){
-        axios.post('https://vinstoreserver.lockonmaram.com/albums',{
-          artist: artist
-        })
-        .then(albums=>{
-          this.albums = albums.data
-        })
-      }
+        }
+      })
     },
-    created(){
-      this.getData()
+    logout: function(){
+      // event.preventDefault()
+      this.token = null
+      this.userId = null
+      this.first_name = null
+      this.last_name = null
+      this.isAdmin = null
+      localStorage.clear();
+      swal("You have logged out", "See you later!")
+      .then(ok=>{
+        window.location.assign('http://localhost:8080')
+      })
     },
-    computed: {
-      cartDisplay: function(){
-        let display = []
-        for (let i = 0; i < this.cart.length; i++) {
-          let listed = false
-          for (let j = 0; j < display.length; j++) {
-            if (display[j] === this.cart[i]) {
-              listed = true
-              display[j].quantity += 1
-            }
-          }
-          if (listed === false) {
-            display.push(this.cart[i])
+    signUp: function(){
+      event.preventDefault()
+
+      axios.post('https://vinstoreserver.lockonmaram.com/users/signup', {
+        first_name: this.first_name,
+        last_name: this.last_name,
+        email: this.email,
+        password: this.password
+      })
+      .then(res=>{
+        // console.log(res.data);
+        this.token = res.data
+        // console.log(this.token);
+        localStorage.setItem('authorization', res.data.token);
+        localStorage.setItem('id', res.data.userId);
+        localStorage.setItem('first_name', res.data.first_name);
+        localStorage.setItem('last_name', res.data.last_name);
+        localStorage.setItem('isAdmin', res.data.isAdmin);
+        swal("Yeay", "Thank you for signing up!", "success")
+        .then(ok=>{
+          window.location.assign('http://localhost:8080')
+        })
+      })
+    },
+    filterArtist: function(artist){
+      axios.post('https://vinstoreserver.lockonmaram.com/albums',{
+        artist: artist
+      })
+      .then(albums=>{
+        this.albums = albums.data
+      })
+    }
+  },
+  created(){
+    this.getData()
+  },
+  computed: {
+    cartDisplay: function(){
+      let display = []
+      for (let i = 0; i < this.cart.length; i++) {
+        let listed = false
+        for (let j = 0; j < display.length; j++) {
+          if (display[j] === this.cart[i]) {
+            listed = true
+            display[j].quantity += 1
           }
         }
-        return display
-      },
+        if (listed === false) {
+          display.push(this.cart[i])
+        }
+      }
+      return display
     },
-  })
+  },
+})
 </script>
 </body>
 </html>
