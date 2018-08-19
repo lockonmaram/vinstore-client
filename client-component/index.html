@@ -99,7 +99,7 @@
             </div>
             <div class="button-group" v-if="token !== null">
               <button type="button" class="btn btn-default" v-on:click="addToCart(album)"><i class="fa fa-shopping-cart"></i> Add To Cart</button>
-              <button type="button" class="btn btn-danger" v-on:click="deleteTaskChild(todo._id)" v-if="isAdmin === 'true'">X</button>
+              <button type="button" class="btn btn-danger" v-on:click="deleteItem(album._id)" v-if="isAdmin === 'true'">X</button>
             </div>
           </div>
         </div>

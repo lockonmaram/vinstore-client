@@ -61,6 +61,36 @@ var app = new Vue({
         swal("Failed!", "Your file has not been uploaded", "error");
       });
     },
+    deleteItem: function(albumId){
+      console.log(albumId);
+      swal({
+        title: "Are you sure?",
+        text: "Once deleted, you will not be able to recover this item!",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      })
+      .then((willDelete) => {
+        if (willDelete) {
+          axios.delete('https://vinstoreserver.lockonmaram.com/albums/delete',{
+            data:{
+              albumId: albumId
+            }
+          })
+          .then(result=>{
+            console.log('----res',result);
+            swal("Poof! Album has been deleted!", {
+              icon: "success",
+            })
+            .then(ok=>{
+              window.location.reload()
+            })
+          })
+        } else {
+          swal("Your album is safe!");
+        }
+      });
+    },
     addToCart: function(album){
       album.quantity = 1
       this.cart.push(album)
