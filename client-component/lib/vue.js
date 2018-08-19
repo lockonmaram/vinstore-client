@@ -8,8 +8,6 @@ var app = new Vue({
     userId: localStorage.getItem('id'),
     first_name: localStorage.getItem('first_name'),
     last_name: localStorage.getItem('last_name'),
-    email: null,
-    password: null,
     token: localStorage.getItem('authorization'),
     emailLogin: null,
     passwordLogin: null,
@@ -140,10 +138,10 @@ var app = new Vue({
       return totalAmount
     },
     getData: function(){
-      console.log('hoho');
+      // console.log('hoho');
       axios.get('https://vinstoreserver.lockonmaram.com/albums')
       .then(albums=>{
-        console.log(albums.data);
+        // console.log(albums.data);
         this.albums = albums.data
         let artistArr = []
         for (let i = 0; i < albums.data.length; i++) {
@@ -160,12 +158,12 @@ var app = new Vue({
         this.artists = artistArr
       })
     },
-    login: function(){
+    login: function(value){
       event.preventDefault()
 
       axios.post('https://vinstoreserver.lockonmaram.com/users/login', {
-        email: this.emailLogin,
-        password: this.passwordLogin
+        email: value.email,
+        password: value.password
       })
       .then(res=>{
         if (res.data === 'wrong password') {
@@ -173,7 +171,7 @@ var app = new Vue({
         }else if (res.data === 'email is not found') {
           swal("Email not found!")
         }else {
-          console.log('resasdfadsf',res);
+          // console.log('resasdfadsf',res);
           this.token = res.data.token
           this.userId = res.data.userId
           this.first_name = res.data.first_name
@@ -205,18 +203,17 @@ var app = new Vue({
         window.location.assign('http://localhost:8080')
       })
     },
-    signUp: function(){
+    signUp: function(value){
       event.preventDefault()
 
       axios.post('https://vinstoreserver.lockonmaram.com/users/signup', {
-        first_name: this.first_name,
-        last_name: this.last_name,
-        email: this.email,
-        password: this.password
+        first_name: value.first_name,
+        last_name: value.last_name,
+        email: value.email,
+        password: value.password
       })
       .then(res=>{
         // console.log(res.data);
-        this.token = res.data
         // console.log(this.token);
         localStorage.setItem('authorization', res.data.token);
         localStorage.setItem('id', res.data.userId);
