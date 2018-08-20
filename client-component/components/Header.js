@@ -40,29 +40,29 @@ Vue.component('Headr',{
           </ul>
           <div class="dropdown">
             <button type="button" class="btn btn-info" data-toggle="dropdown">
-              <i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span classwatch="badge badge-pill badge-danger">{{ totalAmountChild() }}</span>
+              <i class="fa fa-shopping-cart" aria-hidden="true"></i> Cart <span classwatch="badge badge-pill badge-danger">{{ totalAmount }}</span>
             </button>
             <div class="dropdown-menu">
               <div class="row total-header-section">
                 <div class="col-lg-6 col-sm-6 col-6">
-                  <i class="fa fa-shopping-cart" aria-hidden="true"></i> <span class="badge badge-pill badge-danger">{{ totalAmountChild() }}</span>
+                  <i class="fa fa-shopping-cart" aria-hidden="true"></i> <span class="badge badge-pill badge-danger">{{ totalAmount }}</span>
                 </div>
                 <div class="col-lg-6 col-sm-6 col-6 total-section text-right">
-                  <p>Total: <span class="text-info">{{ displayTwoFloatChild(totalPriceChild()) }}</span></p>
+                  <p>Total: <span class="text-info">$ {{ displayTwoFloat(totalPrice) }}</span></p>
                 </div>
               </div>
-              <div class="row cart-detail" v-for="album in cartDisplay">
+              <div class="row cart-detail" v-for="album in cartItems">
                 <div class="col-lg-4 col-sm-4 col-4 cart-detail-img">
                   <img v-bind:src="album.cover">
                 </div>
                 <div class="col-lg-8 col-sm-8 col-8 cart-detail-product">
                   <p>{{ album.title }}</p>
-                  <span class="price text-info"> {{ displayTwoFloatChild(album.price) }}</span> <span class="count"> Quantity:{{ album.quantity }}</span>
+                  <span class="price text-info">$ {{ displayTwoFloat(album.price) }}</span> <span class="count"> Quantity:{{ album.quantity }}</span>
                 </div>
               </div>
               <div class="row">
                 <div class="col-lg-12 col-sm-12 col-12 text-center checkout">
-                  <button class="btn btn-primary btn-block checkout-button" v-on:click="onCheckoutChild(displayTwoFloatChild(totalPriceChild()))">Checkout</button>
+                  <button class="btn btn-primary btn-block checkout-button" v-on:click="onCheckoutChild(displayTwoFloat(totalPrice))">Checkout</button>
                 </div>
               </div>
             </div>
@@ -84,15 +84,12 @@ Vue.component('Headr',{
         onCheckoutChild(value){
           this.$emit('checkout', value)
         },
-        displayTwoFloatChild(value){
-          this.$emit('two', value)
+        cartDisplay(){
+          this.$emit('display')
         },
-        totalPriceChild(){
-          this.$emit('total')
+        displayTwoFloat: function(price){
+          return price.toFixed(2)
         },
-        totalAmountChild(){
-          this.$emit('amount')
-        }
     },
-    props: ['token', 'last_name', 'artists', 'cartDisplay', 'image', 'title', 'price', 'artist', 'cart'],
+    props: ['token', 'last_name', 'artists', 'image', 'title', 'price', 'artist', 'cart', 'cartItems', 'totalAmount', 'totalPrice']
 })

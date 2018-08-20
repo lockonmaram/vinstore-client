@@ -11,98 +11,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script src="./lib/vue.min.js"></script>
+    <!-- <script src="./lib/vue.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   </head>
   <body>
   <div id="app">
     <!-- Header -->
-    <Headr v-bind:token="token"
+    <Headr
+    v-bind:token="token"
     v-bind:last_name="last_name"
     v-bind:artists="artists"
-    v-bind:cartDisplay="cartDisplay"
+    v-bind:artist="artist"
     v-bind:image="image"
     v-bind:title="title"
     v-bind:price="price"
-    v-bind:artist="artist"
     v-bind:cart="cart"
+    v-bind:total-amount="totalAmount"
+    v-bind:total-price="totalPrice"
+    v-bind:cart-items="cartItems"
     v-on:logout-click="logout"
     v-on:get="getData"
     v-on:filter="filterArtist"
     v-on:checkout="onCheckout"
-    v-on:two="displayTwoFloat"
-    v-on:total="totalPrice"
-    v-on:amount="totalAmount"
     ></Headr>
 
-    <section id="items">
-      <h2 class="text-center text-uppercase text-secondary mb-0">Vinyls</h2>
-      <hr class="star-dark mb-5">
-      <div class="container">
-        <div class="row">
-          <div class="product-layout col-md-3 col-sm-6 col-xs-6" v-for="album in albums">
-            <div class="product-thumb transition">
-              <div class="image"><a href="#"><img v-bind:src="album.cover" v-bind:alt="album.title" v-bind:title="album.title" style="width:75%"/></a></div>
-              <div class="caption">
-                <h4><a href="#">{{ album.title }}</a></h4>
-                <p class="artist">{{ album.artist }}</p>
-                <p class="price">${{ displayTwoFloat(album.price) }}</p>
-              </div>
-              <div class="button-group" v-if="token !== null">
-                <button type="button" class="btn btn-default" v-on:click="addToCart(album)"><i class="fa fa-shopping-cart"></i> Add To Cart</button>
-                <button type="button" class="btn btn-danger" v-on:click="deleteItem(album._id)" v-if="isAdmin === 'true'">X</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    <Items
+    v-bind:token="token"
+    v-bind:albums="albums"
+    v-on:add-to-cart="addToCart"
+    v-on:delete="deleteItem"
+    ></Items>
 
-    <section id="add-item" v-if="isAdmin == 'true'">
-      <div class="container">
-        <h2 class="text-center text-uppercase text-secondary mb-0">Add Item</h2>
-        <hr class="star-dark mb-5">
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            <form name="addItemForm" id="addItemForm" novalidate="novalidate">
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Title</label>
-                  <input class="form-control" id="title-input" type="title" placeholder="Album title" required="required" data-validation-required-message="Input album title" v-model="title">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Cover</label>
-                  <br>
-                  <input type="file" id="file" ref="file" v-on:change="handleFileUpload($event.target.files[0])"/>
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Price</label>
-                  <input class="form-control" id="price-input" type="price" placeholder="Album price" required="required" data-validation-required-message="Input album price" v-model="price">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <div class="control-group">
-                <div class="form-group floating-label-form-group controls mb-0 pb-2">
-                  <label>Artist</label>
-                  <input class="form-control" id="artist-input" type="artist" placeholder="Album artist" required="required" data-validation-required-message="Input album artist" v-model="artist">
-                  <p class="help-block text-danger"></p>
-                </div>
-              </div>
-              <br>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-xl" id="addItemButton" v-on:click="addItem">Add Item</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+    <item-add v-on:multer="handleFileUpload" v-on:item-add="addItem"></item-add>
 
     <!-- Login -->
     <Login v-bind:token="token" v-on:login-click="login"></Login>
@@ -112,16 +53,17 @@
     <Foot></Foot>
   </div>
   <!-- components -->
-  <script src="./components/NavButton.js"></script>
-  <script src="./components/NavMenu.js"></script>
+  <!-- <script src="./components/NavButton.js"></script>
+  <script src="./components/NavMenu.js"></script> -->
   <script src="./components/Header.js"></script>
   <script src="./components/Login.js"></script>
   <script src="./components/Register.js"></script>
-  <script src="./components/Tasks.js"></script>
-  <script src="./components/AddTask.js"></script>
-  <script src="./components/Help.js"></script>
+  <script src="./components/Items.js"></script>
+  <script src="./components/AddItem.js"></script>
+  <!-- <script src="./components/AddTask.js"></script> -->
+  <!-- <script src="./components/Help.js"></script> -->
   <script src="./components/Footer.js"></script>
-  <script src="./components/ToTopButton.js"></script>
+  <!-- <script src="./components/ToTopButton.js"></script> -->
   <!-- vue -->
   <script src="./lib/vue.js"></script>
   </body>

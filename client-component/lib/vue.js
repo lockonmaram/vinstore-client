@@ -4,6 +4,9 @@ var app = new Vue({
     albums: null,
     cart: [],
     artists: null,
+    cartItems: null,
+    totalAmount: 0,
+    totalPrice: 0,
 
     userId: localStorage.getItem('id'),
     first_name: localStorage.getItem('first_name'),
@@ -26,7 +29,7 @@ var app = new Vue({
       this.image = img
       console.log('ini image',this.image);
     },
-    addItem: function(){
+    addItem: function(value){
       event.preventDefault()
       let formData = new FormData()
       formData.append('image', this.image)
@@ -40,15 +43,15 @@ var app = new Vue({
       .then(result=>{
         console.log(result.data.link);
         axios.post('https://vinstoreserver.lockonmaram.com/albums/add',{
-          title: this.title,
+          title: value.title,
           cover: result.data.link,
-          price: this.price,
-          artist: this.artist
+          price: value.price,
+          artist: value.artist
         })
         .then(album=>{
           swal("Yeay", "New item has been submited!", "success")
           .then(ok=>{
-            window.location.assign('http://localhost:8080')
+            window.location.reload()
           })
         })
         .catch(err=>{
@@ -123,20 +126,6 @@ var app = new Vue({
         }
       });
     },
-    totalPrice: function(){
-      let totalPrice = 0
-      this.cart.forEach(album =>{
-        totalPrice += (album.price * album.quantity)
-      })
-      return totalPrice
-    },
-    totalAmount: function(){
-      let totalAmount = 0
-      this.cart.forEach(album =>{
-        totalAmount += album.quantity
-      })
-      return totalAmount
-    },
     getData: function(){
       // console.log('hoho');
       axios.get('https://vinstoreserver.lockonmaram.com/albums')
@@ -185,7 +174,7 @@ var app = new Vue({
           localStorage.setItem('isAdmin', res.data.isAdmin);
           swal("Yeay", "You are logged in!", "success")
           .then(ok=>{
-            window.location.assign('http://localhost:8080')
+            window.location.reload()
           })
         }
       })
@@ -200,7 +189,7 @@ var app = new Vue({
       localStorage.clear();
       swal("You have logged out", "See you later!")
       .then(ok=>{
-        window.location.assign('http://localhost:8080')
+        window.location.reload()
       })
     },
     signUp: function(value){
@@ -222,7 +211,7 @@ var app = new Vue({
         localStorage.setItem('isAdmin', res.data.isAdmin);
         swal("Yeay", "Thank you for signing up!", "success")
         .then(ok=>{
-          window.location.assign('http://localhost:8080')
+          window.location.reload()
         })
       })
     },
@@ -253,7 +242,36 @@ var app = new Vue({
           display.push(this.cart[i])
         }
       }
+      this.cartItems = display
       return display
     },
   },
+  watch: {
+    cart: function(){
+      let totalPrice = 0
+      let totalAmount = 0
+      let display = []
+      for (let i = 0; i < this.cart.length; i++) {
+        let listed = false
+        for (let j = 0; j < display.length; j++) {
+          if (display[j] === this.cart[i]) {
+            listed = true
+            display[j].quantity += 1
+          }
+        }
+        if (listed === false) {
+          display.push(this.cart[i])
+        }
+      }
+      this.cart.forEach(album =>{
+        totalPrice += (album.price * album.quantity)
+      })
+      this.cart.forEach(album =>{
+        totalAmount += album.quantity
+      })
+      this.totalPrice = totalPrice
+      this.totalAmount = totalAmount
+      this.cartItems = display
+    }
+  }
 })
