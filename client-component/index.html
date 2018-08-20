@@ -11,8 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <!-- <script src="./lib/vue.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./lib/vue.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   </head>
   <body>
@@ -35,16 +35,15 @@
     v-on:filter="filterArtist"
     v-on:checkout="onCheckout"
     ></Headr>
-
+    <!-- items -->
     <Items
     v-bind:token="token"
     v-bind:albums="albums"
     v-on:add-to-cart="addToCart"
     v-on:delete="deleteItem"
     ></Items>
-
+    <!-- item add -->
     <item-add v-on:multer="handleFileUpload" v-on:item-add="addItem"></item-add>
-
     <!-- Login -->
     <Login v-bind:token="token" v-on:login-click="login"></Login>
     <!-- Register -->
@@ -53,17 +52,12 @@
     <Foot></Foot>
   </div>
   <!-- components -->
-  <!-- <script src="./components/NavButton.js"></script>
-  <script src="./components/NavMenu.js"></script> -->
   <script src="./components/Header.js"></script>
   <script src="./components/Login.js"></script>
   <script src="./components/Register.js"></script>
   <script src="./components/Items.js"></script>
   <script src="./components/AddItem.js"></script>
-  <!-- <script src="./components/AddTask.js"></script> -->
-  <!-- <script src="./components/Help.js"></script> -->
   <script src="./components/Footer.js"></script>
-  <!-- <script src="./components/ToTopButton.js"></script> -->
   <!-- vue -->
   <script src="./lib/vue.js"></script>
   </body>
